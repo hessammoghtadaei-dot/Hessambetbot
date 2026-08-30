@@ -22,15 +22,21 @@ MATCHES_FILE = "matches.json"
 STATE_FILE = "state.json"
 
 
+# =========================
+# TELEGRAM
+# =========================
+
 def telegram(method, data=None, files=None):
 
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/{method}"
 
     if files:
+
         boundary = "----HessamBetBoundary"
         body = bytearray()
 
         for name, value in data.items():
+
             body.extend(
                 f"--{boundary}\r\n"
                 f'Content-Disposition: form-data; name="{name}"\r\n\r\n'
@@ -38,16 +44,20 @@ def telegram(method, data=None, files=None):
             )
 
         for name, filename, content in files:
+
             body.extend(
                 f"--{boundary}\r\n"
                 f'Content-Disposition: form-data; name="{name}"; '
                 f'filename="{filename}"\r\n'
                 f"Content-Type: image/png\r\n\r\n".encode()
             )
+
             body.extend(content)
             body.extend(b"\r\n")
 
-        body.extend(f"--{boundary}--\r\n".encode())
+        body.extend(
+            f"--{boundary}--\r\n".encode()
+        )
 
         request = urllib.request.Request(
             url,
@@ -101,12 +111,16 @@ def send_image(chat_id, image_bytes, caption):
         [
             (
                 "photo",
-                "hessambet_match.png",
+                "hessambet.png",
                 image_bytes
             )
         ]
     )
 
+
+# =========================
+# JSON
+# =========================
 
 def load_json(filename, default):
 
@@ -141,6 +155,10 @@ def save_json(filename, data):
         )
 
 
+# =========================
+# BROWSERLESS
+# =========================
+
 def browserless_html(url):
 
     endpoint = (
@@ -173,6 +191,10 @@ def browserless_html(url):
         )
 
 
+# =========================
+# FOTMOB
+# =========================
+
 def get_match_id(url):
 
     result = re.search(
@@ -180,7 +202,10 @@ def get_match_id(url):
         url
     )
 
-    return result.group(1) if result else None
+    if result:
+        return result.group(1)
+
+    return None
 
 
 def extract_next_data(html):
@@ -196,10 +221,13 @@ def extract_next_data(html):
         return None
 
     try:
+
         return json.loads(
             result.group(1)
         )
+
     except Exception:
+
         return None
 
 
@@ -227,10 +255,12 @@ def find_team_objects(obj):
 
             if name and team_id:
 
-                teams.append({
-                    "name": name,
-                    "id": team_id
-                })
+                teams.append(
+                    {
+                        "name": name,
+                        "id": team_id
+                    }
+                )
 
         for value in obj.values():
 
@@ -315,6 +345,7 @@ def extract_match(html, match_id):
             unique.append(team)
 
     if len(unique) < 2:
+
         return None
 
     home = unique[0]
@@ -378,17 +409,25 @@ def extract_match(html, match_id):
                 pass
 
     if match_time is None:
+
         return None
 
     return {
 
-        "match_id": str(match_id),
+        "match_id":
+            str(match_id),
 
-        "home": home["name"],
-        "away": away["name"],
+        "home":
+            home["name"],
 
-        "home_id": home["id"],
-        "away_id": away["id"],
+        "away":
+            away["name"],
+
+        "home_id":
+            home["id"],
+
+        "away_id":
+            away["id"],
 
         "home_logo":
             f"https://images.fotmob.com/"
@@ -403,10 +442,17 @@ def extract_match(html, match_id):
         "datetime":
             match_time.isoformat(),
 
-        "sent_24h": False,
-        "sent_today": False
+        "sent_24h":
+            False,
+
+        "sent_today":
+            False
     }
 
+
+# =========================
+# IMAGE
+# =========================
 
 def download_image(url):
 
@@ -429,33 +475,26 @@ def download_image(url):
         ).convert("RGBA")
 
 
-def font(size, bold=False):
+def get_font(size, bold=False):
 
-    paths = [
+    if bold:
 
-        "/usr/share/fonts/truetype/dejavu/"
-        "DejaVuSans-Bold.ttf"
-        if bold else
-        "/usr/share/fonts/truetype/dejavu/"
-        "DejaVuSans.ttf",
+        path = (
+            "/usr/share/fonts/truetype/dejavu/"
+            "DejaVuSans-Bold.ttf"
+        )
 
-        "/usr/share/fonts/truetype/liberation2/"
-        "LiberationSans-Bold.ttf"
-        if bold else
-        "/usr/share/fonts/truetype/liberation2/"
-        "LiberationSans-Regular.ttf"
-    ]
+    else:
 
-    for path in paths:
+        path = (
+            "/usr/share/fonts/truetype/dejavu/"
+            "DejaVuSans.ttf"
+        )
 
-        if os.path.exists(path):
-
-            return ImageFont.truetype(
-                path,
-                size
-            )
-
-    return ImageFont.load_default()
+    return ImageFont.truetype(
+        path,
+        size
+    )
 
 
 def create_match_card(match, mode):
@@ -466,39 +505,47 @@ def create_match_card(match, mode):
     image = Image.new(
         "RGB",
         (width, height),
-        (20, 22, 30)
+        (18, 20, 28)
     )
 
     draw = ImageDraw.Draw(
         image
     )
 
-    # Header
+    # HEADER
+
     draw.text(
-        (width // 2, 45),
+        (600, 50),
         "HessamBet",
-        font=font(54, True),
+        font=get_font(
+            58,
+            True
+        ),
         anchor="ma",
         fill=(255, 255, 255)
     )
 
     if mode == "24h":
 
-        title = "24 HOURS TO GO"
+        subtitle = "24 HOURS TO GO"
 
     else:
 
-        title = "TODAY'S MATCH"
+        subtitle = "TODAY'S MATCH"
 
     draw.text(
-        (width // 2, 125),
-        title,
-        font=font(30, True),
+        (600, 125),
+        subtitle,
+        font=get_font(
+            28,
+            True
+        ),
         anchor="ma",
-        fill=(220, 220, 220)
+        fill=(210, 210, 210)
     )
 
-    # Logos
+    # LOGOS
+
     home_logo = download_image(
         match["home_logo"]
     )
@@ -507,23 +554,15 @@ def create_match_card(match, mode):
         match["away_logo"]
     )
 
-    max_size = 230
-
     home_logo.thumbnail(
-        (max_size, max_size)
+        (220, 220)
     )
 
     away_logo.thumbnail(
-        (max_size, max_size)
+        (220, 220)
     )
 
-    image.alpha_composite(
-        home_logo,
-        (
-            270 - home_logo.width // 2,
-            220
-        )
-    ) if image.mode == "RGBA" else image.paste(
+    image.paste(
         home_logo,
         (
             270 - home_logo.width // 2,
@@ -542,30 +581,43 @@ def create_match_card(match, mode):
     )
 
     # VS
+
     draw.text(
-        (600, 330),
+        (600, 325),
         "VS",
-        font=font(48, True),
+        font=get_font(
+            48,
+            True
+        ),
         anchor="mm",
         fill=(255, 255, 255)
     )
 
-    # Team names
+    # TEAMS
+
     draw.text(
-        (270, 485),
+        (270, 490),
         match["home"],
-        font=font(34, True),
+        font=get_font(
+            34,
+            True
+        ),
         anchor="ma",
         fill=(255, 255, 255)
     )
 
     draw.text(
-        (930, 485),
+        (930, 490),
         match["away"],
-        font=font(34, True),
+        font=get_font(
+            34,
+            True
+        ),
         anchor="ma",
         fill=(255, 255, 255)
     )
+
+    # DATE
 
     match_time = datetime.fromisoformat(
         match["datetime"]
@@ -576,28 +628,37 @@ def create_match_card(match, mode):
         match_time.strftime(
             "%d/%m/%Y   •   %H:%M"
         ),
-        font=font(32, True),
+        font=get_font(
+            32,
+            True
+        ),
         anchor="mm",
-        fill=(230, 230, 230)
+        fill=(235, 235, 235)
     )
 
     draw.text(
         (600, 650),
-        "🇮🇷 IRAN TIME",
-        font=font(24),
+        "IRAN TIME",
+        font=get_font(
+            23
+        ),
         anchor="mm",
-        fill=(190, 190, 190)
+        fill=(170, 170, 170)
     )
 
     output = BytesIO()
 
     image.save(
         output,
-        format="PNG"
+        "PNG"
     )
 
     return output.getvalue()
 
+
+# =========================
+# ADD MATCH
+# =========================
 
 def add_match(match):
 
@@ -609,7 +670,10 @@ def add_match(match):
     for old in matches:
 
         if str(
-            old.get("match_id", "")
+            old.get(
+                "match_id",
+                ""
+            )
         ) == str(
             match["match_id"]
         ):
@@ -626,11 +690,17 @@ def add_match(match):
     return True
 
 
+# =========================
+# TELEGRAM COMMANDS
+# =========================
+
 def process_updates():
 
     state = load_json(
         STATE_FILE,
-        {"offset": 0}
+        {
+            "offset": 0
+        }
     )
 
     offset = state.get(
@@ -685,17 +755,18 @@ def process_updates():
             ""
         ).strip()
 
+        # START
+
         if text == "/start":
 
             send_message(
                 chat["id"],
-                "⚽ HessamBet فعال است.\n\n"
-                "لینک بازی FotMob را بفرست.\n\n"
-                "/test24\n"
-                "/testtoday"
+                "⚽ HessamBet فعال است."
             )
 
             continue
+
+        # TEST 24
 
         if text == "/test24":
 
@@ -714,15 +785,17 @@ def process_updates():
                 send_image(
                     GROUP_CHAT_ID,
                     image,
-                    "⏳ تست اعلان ۲۴ ساعته"
+                    "🧪 تست اعلان ۲۴ ساعته"
                 )
 
                 send_message(
                     chat["id"],
-                    "✅ تست ۲۴ ساعته ارسال شد."
+                    "✅ تست ارسال شد."
                 )
 
             continue
+
+        # TEST TODAY
 
         if text == "/testtoday":
 
@@ -741,15 +814,17 @@ def process_updates():
                 send_image(
                     GROUP_CHAT_ID,
                     image,
-                    "🔥 تست اعلان روز بازی"
+                    "🧪 تست اعلان بازی امروز"
                 )
 
                 send_message(
                     chat["id"],
-                    "✅ تست روز بازی ارسال شد."
+                    "✅ تست ارسال شد."
                 )
 
             continue
+
+        # FOTMOB LINK
 
         if "fotmob.com/match/" in text:
 
@@ -762,7 +837,7 @@ def process_updates():
 
             send_message(
                 chat["id"],
-                "⏳ در حال دریافت اطلاعات بازی..."
+                "⏳ دریافت اطلاعات بازی..."
             )
 
             try:
@@ -796,24 +871,9 @@ def process_updates():
 
             if add_match(match):
 
-                match_time = datetime.fromisoformat(
-                    match["datetime"]
-                )
-
                 send_message(
-
                     chat["id"],
-
-                    "✅ بازی دریافت شد.\n\n"
-
-                    f"⚽️ {match['home']}\n"
-                    f"🆚 {match['away']}\n\n"
-
-                    f"📅 {match_time.strftime('%d/%m/%Y')}\n"
-                    f"🕐 {match_time.strftime('%H:%M')}\n\n"
-
-                    "🖼 لوگوها آماده‌اند."
-
+                    "✅ بازی دریافت شد."
                 )
 
             else:
@@ -823,11 +883,16 @@ def process_updates():
                     "ℹ️ این بازی قبلاً اضافه شده."
                 )
 
+
     save_json(
         STATE_FILE,
         state
     )
 
+
+# =========================
+# NOTIFICATIONS
+# =========================
 
 def check_notifications():
 
@@ -854,6 +919,8 @@ def check_notifications():
 
             continue
 
+        # ONLY REAL 24-HOUR NOTIFICATION
+
         if (
 
             not match.get(
@@ -863,14 +930,13 @@ def check_notifications():
 
             and
 
-            now >= (
-                match_time
-                - timedelta(hours=24)
+            match_time - timedelta(
+                hours=24
             )
 
-            and
+            <= now
 
-            now < match_time
+            < match_time
 
         ):
 
@@ -882,11 +948,14 @@ def check_notifications():
             send_image(
                 GROUP_CHAT_ID,
                 image,
-                "⏳ ۲۴ ساعت تا شروع مسابقه"
+                "⏳ ۲۴ ساعت تا شروع بازی"
             )
 
             match["sent_24h"] = True
+
             changed = True
+
+        # TODAY
 
         if (
 
@@ -906,7 +975,7 @@ def check_notifications():
 
             and
 
-            now.minute <= 4
+            now.minute < 5
 
             and
 
@@ -926,6 +995,7 @@ def check_notifications():
             )
 
             match["sent_today"] = True
+
             changed = True
 
     if changed:
@@ -935,6 +1005,10 @@ def check_notifications():
             matches
         )
 
+
+# =========================
+# MAIN
+# =========================
 
 def main():
 
