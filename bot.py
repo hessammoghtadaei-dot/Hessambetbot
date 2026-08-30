@@ -7,8 +7,12 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from io import BytesIO
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
+
+# =========================================================
+# CONFIG
+# =========================================================
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 GROUP_CHAT_ID = int(os.environ["GROUP_CHAT_ID"])
@@ -22,9 +26,9 @@ MATCHES_FILE = "matches.json"
 STATE_FILE = "state.json"
 
 
-# =========================
+# =========================================================
 # TELEGRAM
-# =========================
+# =========================================================
 
 def telegram(method, data=None, files=None):
 
@@ -33,9 +37,10 @@ def telegram(method, data=None, files=None):
     if files:
 
         boundary = "----HessamBetBoundary"
+
         body = bytearray()
 
-        for name, value in data.items():
+        for name, value in (data or {}).items():
 
             body.extend(
                 f"--{boundary}\r\n"
@@ -70,13 +75,11 @@ def telegram(method, data=None, files=None):
 
     else:
 
-        encoded = urllib.parse.urlencode(
-            data or {}
-        ).encode()
-
         request = urllib.request.Request(
             url,
-            data=encoded
+            data=urllib.parse.urlencode(
+                data or {}
+            ).encode()
         )
 
     with urllib.request.urlopen(
@@ -118,9 +121,9 @@ def send_image(chat_id, image_bytes, caption):
     )
 
 
-# =========================
+# =========================================================
 # JSON
-# =========================
+# =========================================================
 
 def load_json(filename, default):
 
@@ -155,9 +158,9 @@ def save_json(filename, data):
         )
 
 
-# =========================
+# =========================================================
 # BROWSERLESS
-# =========================
+# =========================================================
 
 def browserless_html(url):
 
@@ -191,9 +194,9 @@ def browserless_html(url):
         )
 
 
-# =========================
+# =========================================================
 # FOTMOB
-# =========================
+# =========================================================
 
 def get_match_id(url):
 
@@ -255,12 +258,10 @@ def find_team_objects(obj):
 
             if name and team_id:
 
-                teams.append(
-                    {
-                        "name": name,
-                        "id": team_id
-                    }
-                )
+                teams.append({
+                    "name": name,
+                    "id": team_id
+                })
 
         for value in obj.values():
 
@@ -290,7 +291,6 @@ def find_value(obj, keys):
                 value = obj[key]
 
                 if value is not None:
-
                     return value
 
         for value in obj.values():
@@ -301,7 +301,6 @@ def find_value(obj, keys):
             )
 
             if result is not None:
-
                 return result
 
     elif isinstance(obj, list):
@@ -314,7 +313,6 @@ def find_value(obj, keys):
             )
 
             if result is not None:
-
                 return result
 
     return None
@@ -345,7 +343,6 @@ def extract_match(html, match_id):
             unique.append(team)
 
     if len(unique) < 2:
-
         return None
 
     home = unique[0]
@@ -409,7 +406,6 @@ def extract_match(html, match_id):
                 pass
 
     if match_time is None:
-
         return None
 
     return {
@@ -430,14 +426,18 @@ def extract_match(html, match_id):
             away["id"],
 
         "home_logo":
-            f"https://images.fotmob.com/"
-            f"image_resources/logo/teamlogo/"
-            f"{home['id']}.png",
+            (
+                "https://images.fotmob.com/"
+                "image_resources/logo/teamlogo/"
+                f"{home['id']}.png"
+            ),
 
         "away_logo":
-            f"https://images.fotmob.com/"
-            f"image_resources/logo/teamlogo/"
-            f"{away['id']}.png",
+            (
+                "https://images.fotmob.com/"
+                "image_resources/logo/teamlogo/"
+                f"{away['id']}.png"
+            ),
 
         "datetime":
             match_time.isoformat(),
@@ -450,9 +450,9 @@ def extract_match(html, match_id):
     }
 
 
-# =========================
-# IMAGE
-# =========================
+# =========================================================
+# IMAGE HELPERS
+# =========================================================
 
 def download_image(url):
 
@@ -479,46 +479,115 @@ def get_font(size, bold=False):
 
     if bold:
 
-        path = (
-            "/usr/share/fonts/truetype/dejavu/"
-            "DejaVuSans-Bold.ttf"
-        )
+        paths = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf"
+        ]
 
     else:
 
-        path = (
-            "/usr/share/fonts/truetype/dejavu/"
-            "DejaVuSans.ttf"
-        )
+        paths = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf"
+        ]
 
-    return ImageFont.truetype(
-        path,
-        size
+    for path in paths:
+
+        if os.path.exists(path):
+
+            return ImageFont.truetype(
+                path,
+                size
+            )
+
+    return ImageFont.load_default()
+
+
+def rounded_rectangle(
+    draw,
+    box,
+    radius,
+    fill,
+    outline=None,
+    width=1
+):
+
+    draw.rounded_rectangle(
+        box,
+        radius=radius,
+        fill=fill,
+        outline=outline,
+        width=width
     )
 
+
+# =========================================================
+# MATCH CARD
+# =========================================================
 
 def create_match_card(match, mode):
 
     width = 1200
-    height = 750
+    height = 800
+
+    # -----------------------------------------------------
+    # BACKGROUND
+    # -----------------------------------------------------
 
     image = Image.new(
         "RGB",
         (width, height),
-        (18, 20, 28)
+        (11, 14, 22)
     )
 
     draw = ImageDraw.Draw(
         image
     )
 
+    # Subtle background circles
+
+    glow = Image.new(
+        "RGBA",
+        (width, height),
+        (0, 0, 0, 0)
+    )
+
+    glow_draw = ImageDraw.Draw(
+        glow
+    )
+
+    glow_draw.ellipse(
+        (-250, -200, 500, 550),
+        fill=(35, 80, 160, 70)
+    )
+
+    glow_draw.ellipse(
+        (850, 350, 1450, 950),
+        fill=(110, 45, 160, 50)
+    )
+
+    glow = glow.filter(
+        ImageFilter.GaussianBlur(90)
+    )
+
+    image = Image.alpha_composite(
+        image.convert("RGBA"),
+        glow
+    ).convert("RGB")
+
+    draw = ImageDraw.Draw(
+        image
+    )
+
+    # -----------------------------------------------------
     # HEADER
+    # -----------------------------------------------------
 
     draw.text(
-        (600, 50),
+        (600, 48),
         "HessamBet",
         font=get_font(
-            58,
+            56,
             True
         ),
         anchor="ma",
@@ -527,63 +596,105 @@ def create_match_card(match, mode):
 
     if mode == "24h":
 
-        subtitle = "24 HOURS TO GO"
+        title = "24 HOURS TO GO"
 
     else:
 
-        subtitle = "TODAY'S MATCH"
+        title = "TODAY'S MATCH"
 
     draw.text(
-        (600, 125),
-        subtitle,
+        (600, 112),
+        title,
         font=get_font(
-            28,
+            25,
             True
         ),
         anchor="ma",
-        fill=(210, 210, 210)
+        fill=(180, 190, 210)
     )
 
-    # LOGOS
+    # -----------------------------------------------------
+    # MAIN MATCH PANEL
+    # -----------------------------------------------------
 
-    home_logo = download_image(
-        match["home_logo"]
+    rounded_rectangle(
+        draw,
+        (70, 165, 1130, 690),
+        36,
+        (21, 26, 38),
+        outline=(55, 64, 82),
+        width=2
     )
 
-    away_logo = download_image(
-        match["away_logo"]
-    )
+    # -----------------------------------------------------
+    # TEAM LOGOS
+    # -----------------------------------------------------
 
-    home_logo.thumbnail(
-        (220, 220)
-    )
+    try:
 
-    away_logo.thumbnail(
-        (220, 220)
-    )
+        home_logo = download_image(
+            match["home_logo"]
+        )
 
-    image.paste(
-        home_logo,
-        (
-            270 - home_logo.width // 2,
-            220
-        ),
-        home_logo
-    )
+        home_logo.thumbnail(
+            (210, 210)
+        )
 
-    image.paste(
-        away_logo,
-        (
-            930 - away_logo.width // 2,
-            220
-        ),
-        away_logo
-    )
+        away_logo = download_image(
+            match["away_logo"]
+        )
 
+        away_logo.thumbnail(
+            (210, 210)
+        )
+
+        # Logo circles / panels
+
+        rounded_rectangle(
+            draw,
+            (150, 225, 410, 485),
+            30,
+            (29, 35, 50)
+        )
+
+        rounded_rectangle(
+            draw,
+            (790, 225, 1050, 485),
+            30,
+            (29, 35, 50)
+        )
+
+        image.paste(
+            home_logo,
+            (
+                280 - home_logo.width // 2,
+                355 - home_logo.height // 2
+            ),
+            home_logo
+        )
+
+        image.paste(
+            away_logo,
+            (
+                920 - away_logo.width // 2,
+                355 - away_logo.height // 2
+            ),
+            away_logo
+        )
+
+    except Exception as error:
+
+        print(
+            "Logo error:",
+            error
+        )
+
+    # -----------------------------------------------------
     # VS
+    # -----------------------------------------------------
 
     draw.text(
-        (600, 325),
+        (600, 355),
         "VS",
         font=get_font(
             48,
@@ -593,13 +704,15 @@ def create_match_card(match, mode):
         fill=(255, 255, 255)
     )
 
-    # TEAMS
+    # -----------------------------------------------------
+    # TEAM NAMES
+    # -----------------------------------------------------
 
     draw.text(
-        (270, 490),
+        (280, 535),
         match["home"],
         font=get_font(
-            34,
+            32,
             True
         ),
         anchor="ma",
@@ -607,58 +720,94 @@ def create_match_card(match, mode):
     )
 
     draw.text(
-        (930, 490),
+        (920, 535),
         match["away"],
         font=get_font(
-            34,
+            32,
             True
         ),
         anchor="ma",
         fill=(255, 255, 255)
     )
 
-    # DATE
+    # -----------------------------------------------------
+    # MATCH DATE / TIME
+    # -----------------------------------------------------
 
     match_time = datetime.fromisoformat(
         match["datetime"]
     )
 
-    draw.text(
-        (600, 585),
-        match_time.strftime(
-            "%d/%m/%Y   •   %H:%M"
-        ),
-        font=get_font(
-            32,
-            True
-        ),
-        anchor="mm",
-        fill=(235, 235, 235)
+    date_text = match_time.strftime(
+        "%d/%m/%Y"
+    )
+
+    time_text = match_time.strftime(
+        "%H:%M"
+    )
+
+    rounded_rectangle(
+        draw,
+        (365, 585, 835, 665),
+        25,
+        (29, 35, 50)
     )
 
     draw.text(
-        (600, 650),
-        "IRAN TIME",
+        (600, 612),
+        date_text,
         font=get_font(
-            23
+            23,
+            True
         ),
         anchor="mm",
-        fill=(170, 170, 170)
+        fill=(210, 215, 225)
     )
+
+    draw.text(
+        (600, 645),
+        time_text,
+        font=get_font(
+            27,
+            True
+        ),
+        anchor="mm",
+        fill=(255, 255, 255)
+    )
+
+    # -----------------------------------------------------
+    # FOOTER
+    # -----------------------------------------------------
+
+    draw.text(
+        (600, 740),
+        "IRAN TIME  •  HessamBet",
+        font=get_font(
+            20,
+            True
+        ),
+        anchor="mm",
+        fill=(125, 135, 155)
+    )
+
+    # -----------------------------------------------------
+    # OUTPUT
+    # -----------------------------------------------------
 
     output = BytesIO()
 
     image.save(
         output,
-        "PNG"
+        "PNG",
+        optimize=True
     )
 
     return output.getvalue()
 
 
-# =========================
-# ADD MATCH
-# =========================
+# =========================================================
+# MATCH STORAGE
+# =========================================================
 
 def add_match(match):
 
@@ -690,9 +839,9 @@ def add_match(match):
     return True
 
 
-# =========================
-# TELEGRAM COMMANDS
-# =========================
+# =========================================================
+# TELEGRAM UPDATES
+# =========================================================
 
 def process_updates():
 
@@ -737,16 +886,22 @@ def process_updates():
             {}
         )
 
+        # Commands only from private chat
+
         if chat.get(
             "type"
         ) != "private":
 
             continue
 
+        # Only owner
+
         if message.get(
             "from",
             {}
-        ).get("id") != OWNER_ID:
+        ).get(
+            "id"
+        ) != OWNER_ID:
 
             continue
 
@@ -755,7 +910,9 @@ def process_updates():
             ""
         ).strip()
 
+        # -------------------------------------------------
         # START
+        # -------------------------------------------------
 
         if text == "/start":
 
@@ -766,7 +923,9 @@ def process_updates():
 
             continue
 
-        # TEST 24
+        # -------------------------------------------------
+        # TEST 24H
+        # -------------------------------------------------
 
         if text == "/test24":
 
@@ -775,7 +934,16 @@ def process_updates():
                 []
             )
 
-            if matches:
+            if not matches:
+
+                send_message(
+                    chat["id"],
+                    "❌ هیچ بازی‌ای برای تست وجود ندارد."
+                )
+
+                continue
+
+            try:
 
                 image = create_match_card(
                     matches[-1],
@@ -785,17 +953,31 @@ def process_updates():
                 send_image(
                     GROUP_CHAT_ID,
                     image,
-                    "🧪 تست اعلان ۲۴ ساعته"
+                    "🧪 تست کارت اعلان ۲۴ ساعته"
                 )
 
                 send_message(
                     chat["id"],
-                    "✅ تست ارسال شد."
+                    "✅ تست کارت ۲۴ ساعته ارسال شد."
+                )
+
+            except Exception as error:
+
+                print(
+                    "TEST24 ERROR:",
+                    error
+                )
+
+                send_message(
+                    chat["id"],
+                    "❌ خطا در ساخت کارت تست."
                 )
 
             continue
 
+        # -------------------------------------------------
         # TEST TODAY
+        # -------------------------------------------------
 
         if text == "/testtoday":
 
@@ -804,7 +986,16 @@ def process_updates():
                 []
             )
 
-            if matches:
+            if not matches:
+
+                send_message(
+                    chat["id"],
+                    "❌ هیچ بازی‌ای برای تست وجود ندارد."
+                )
+
+                continue
+
+            try:
 
                 image = create_match_card(
                     matches[-1],
@@ -814,17 +1005,31 @@ def process_updates():
                 send_image(
                     GROUP_CHAT_ID,
                     image,
-                    "🧪 تست اعلان بازی امروز"
+                    "🧪 تست کارت بازی امروز"
                 )
 
                 send_message(
                     chat["id"],
-                    "✅ تست ارسال شد."
+                    "✅ تست کارت بازی امروز ارسال شد."
+                )
+
+            except Exception as error:
+
+                print(
+                    "TESTTODAY ERROR:",
+                    error
+                )
+
+                send_message(
+                    chat["id"],
+                    "❌ خطا در ساخت کارت تست."
                 )
 
             continue
 
+        # -------------------------------------------------
         # FOTMOB LINK
+        # -------------------------------------------------
 
         if "fotmob.com/match/" in text:
 
@@ -854,7 +1059,7 @@ def process_updates():
             except Exception as error:
 
                 print(
-                    "ERROR:",
+                    "FOTMOB ERROR:",
                     error
                 )
 
@@ -864,7 +1069,7 @@ def process_updates():
 
                 send_message(
                     chat["id"],
-                    "❌ اطلاعات کامل بازی دریافت نشد."
+                    "❌ اطلاعات کامل بازی از FotMob دریافت نشد."
                 )
 
                 continue
@@ -883,16 +1088,15 @@ def process_updates():
                     "ℹ️ این بازی قبلاً اضافه شده."
                 )
 
-
     save_json(
         STATE_FILE,
         state
     )
 
 
-# =========================
-# NOTIFICATIONS
-# =========================
+# =========================================================
+# AUTOMATIC NOTIFICATIONS
+# =========================================================
 
 def check_notifications():
 
@@ -919,84 +1123,94 @@ def check_notifications():
 
             continue
 
-        # ONLY REAL 24-HOUR NOTIFICATION
+        # -------------------------------------------------
+        # 24 HOURS BEFORE
+        # -------------------------------------------------
+
+        notification_time = (
+            match_time - timedelta(
+                hours=24
+            )
+        )
 
         if (
-
             not match.get(
                 "sent_24h",
                 False
             )
-
             and
-
-            match_time - timedelta(
-                hours=24
-            )
-
-            <= now
-
-            < match_time
-
+            notification_time <= now
+            and
+            now < match_time
         ):
 
-            image = create_match_card(
-                match,
-                "24h"
-            )
+            try:
 
-            send_image(
-                GROUP_CHAT_ID,
-                image,
-                "⏳ ۲۴ ساعت تا شروع بازی"
-            )
+                image = create_match_card(
+                    match,
+                    "24h"
+                )
 
-            match["sent_24h"] = True
+                send_image(
+                    GROUP_CHAT_ID,
+                    image,
+                    "⏳ ۲۴ ساعت تا شروع بازی"
+                )
 
-            changed = True
+                match["sent_24h"] = True
 
+                changed = True
+
+            except Exception as error:
+
+                print(
+                    "24H NOTIFICATION ERROR:",
+                    error
+                )
+
+        # -------------------------------------------------
         # TODAY
+        # -------------------------------------------------
 
         if (
-
             not match.get(
                 "sent_today",
                 False
             )
-
             and
-
             match_time.date()
             == now.date()
-
             and
-
-            now.hour == 12
-
-            and
-
-            now.minute < 5
-
-            and
-
             match_time > now
-
+            and
+            now.hour == 12
+            and
+            now.minute < 5
         ):
 
-            image = create_match_card(
-                match,
-                "today"
-            )
+            try:
 
-            send_image(
-                GROUP_CHAT_ID,
-                image,
-                "🔥 بازی امروز"
-            )
+                image = create_match_card(
+                    match,
+                    "today"
+                )
 
-            match["sent_today"] = True
+                send_image(
+                    GROUP_CHAT_ID,
+                    image,
+                    "🔥 بازی امروز"
+                )
 
-            changed = True
+                match["sent_today"] = True
+
+                changed = True
+
+            except Exception as error:
+
+                print(
+                    "TODAY NOTIFICATION ERROR:",
+                    error
+                )
 
     if changed:
 
@@ -1006,15 +1220,19 @@ def check_notifications():
         )
 
 
-# =========================
+# =========================================================
 # MAIN
-# =========================
+# =========================================================
 
 def main():
+
+    print("HessamBet starting...")
 
     process_updates()
 
     check_notifications()
+
+    print("HessamBet finished.")
 
 
 if __name__ == "__main__":
