@@ -5,36 +5,26 @@ on:
     - cron: "*/5 * * * *"
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  bot:
-
+  run-bot:
     runs-on: ubuntu-latest
 
-    steps:
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      GROUP_CHAT_ID: ${{ secrets.GROUP_CHAT_ID }}
+      BROWSERLESS_TOKEN: ${{ secrets.BROWSERLESS_TOKEN }}
 
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
       - name: Run bot
-        env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          GROUP_CHAT_ID: ${{ secrets.GROUP_CHAT_ID }}
-        run: |
-          python bot.py
-
-      - name: Save bot data
-        run: |
-
-          git config user.name "Hessambetbot"
-
+        run: python bot.py
           git config user.email "hessambetbot@users.noreply.github.com"
 
           git add matches.json state.json
