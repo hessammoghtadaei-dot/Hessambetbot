@@ -23,5 +23,8 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Pillow
+        run: pip install Pillow
+
       - name: Run bot
         run: python bot.py
