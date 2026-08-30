@@ -1,50 +1,64 @@
 import os
 import json
-from datetime import datetime
+import urllib.request
+import urllib.parse
+from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
-from telegram import Update
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    MessageHandler,
-    ContextTypes,
-    filters,
-)
 
-TOKEN = os.environ["BOT_TOKEN"]
+BOT_TOKEN = os.environ["BOT_TOKEN"]
 GROUP_CHAT_ID = os.environ["GROUP_CHAT_ID"]
 
 IRAN_TZ = ZoneInfo("Asia/Tehran")
-DATA_FILE = "matches.json"
+
+MATCHES_FILE = "matches.json"
+STATE_FILE = "state.json"
 
 
-def load_matches():
-    if not os.path.exists(DATA_FILE):
-        return []
+def telegram(method, data=None):
+
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/{method}"
+
+    if data:
+        encoded = urllib.parse.urlencode(data).encode()
+        request = urllib.request.Request(url, data=encoded)
+    else:
+        request = urllib.request.Request(url)
+
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.loads(response.read().decode())
+
+
+def load_json(filename, default):
+
+    if not os.path.exists(filename):
+        return default
 
     try:
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             return json.load(f)
-    except:
-        return []
+    except Exception:
+        return default
 
 
-def save_matches(matches):
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(matches, f, ensure_ascii=False, indent=2)
+def save_json(filename, data):
+
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def parse_matches(text):
+
     matches = []
 
     for line in text.splitlines():
+
         line = line.strip()
 
         if not line:
             continue
 
-        parts = [p.strip() for p in line.split("|")]
+        parts = [x.strip() for x in line.split("|")]
 
         if len(parts) != 3:
             continue
@@ -57,175 +71,232 @@ def parse_matches(text):
         home, away = teams.split(" - ", 1)
 
         try:
-            dt = datetime.strptime(
+
+            match_time = datetime.strptime(
                 f"{date_text} {time_text}",
                 "%d/%m/%Y %H:%M"
             ).replace(tzinfo=IRAN_TZ)
+
         except ValueError:
+
             continue
 
         matches.append({
             "home": home.strip(),
             "away": away.strip(),
-            "datetime": dt.isoformat(),
+            "datetime": match_time.isoformat(),
             "sent_24h": False,
-            "sent_today": False,
+            "sent_today": False
         })
 
     return matches
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+def add_matches(new_matches):
 
-    await update.message.reply_text(
-        "⚽️ Hessambetbot فعال است.\n\n"
-        "برای اضافه کردن بازی‌ها، هر بازی را در یک خط بفرست:\n\n"
-        "Real Madrid - Barcelona | 31/08/2026 | 23:00\n"
-        "Liverpool - Arsenal | 01/09/2026 | 22:30\n\n"
-        "ساعت‌ها به وقت ایران هستند."
-    )
-
-
-async def receive_matches(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
-
-    # فقط پیام خصوصی از طرف صاحب ربات را قبول می‌کنیم
-    if update.effective_chat.type != "private":
-        return
-
-    matches = parse_matches(update.message.text)
-
-    if not matches:
-        await update.message.reply_text(
-            "❌ قالب درست نیست.\n\n"
-            "نمونه:\n"
-            "Real Madrid - Barcelona | 31/08/2026 | 23:00"
-        )
-        return
-
-    old_matches = load_matches()
+    matches = load_json(MATCHES_FILE, [])
 
     added = 0
 
-    for new_match in matches:
+    for new_match in new_matches:
 
-        exists = any(
-            old["home"].lower() == new_match["home"].lower()
-            and old["away"].lower() == new_match["away"].lower()
-            and old["datetime"] == new_match["datetime"]
-            for old in old_matches
+        duplicate = any(
+            m["home"].lower() == new_match["home"].lower()
+            and m["away"].lower() == new_match["away"].lower()
+            and m["datetime"] == new_match["datetime"]
+            for m in matches
         )
 
-        if not exists:
-            old_matches.append(new_match)
+        if not duplicate:
+
+            matches.append(new_match)
             added += 1
 
-    save_matches(old_matches)
+    save_json(MATCHES_FILE, matches)
 
-    await update.message.reply_text(
-        f"✅ {added} بازی اضافه شد.\n"
-        f"📋 مجموع بازی‌ها: {len(old_matches)}"
+    return added, len(matches)
+
+
+def send_message(text):
+
+    telegram(
+        "sendMessage",
+        {
+            "chat_id": GROUP_CHAT_ID,
+            "text": text
+        }
     )
 
 
-async def check_matches(application):
+def get_updates(offset):
+
+    data = {}
+
+    if offset:
+        data["offset"] = offset
+
+    result = telegram("getUpdates", data)
+
+    return result.get("result", [])
+
+
+def process_updates():
+
+    state = load_json(STATE_FILE, {"offset": 0})
+
+    offset = state.get("offset", 0)
+
+    updates = get_updates(offset)
+
+    for update in updates:
+
+        update_id = update["update_id"]
+
+        state["offset"] = update_id + 1
+
+        message = update.get("message")
+
+        if not message:
+            continue
+
+        chat = message.get("chat", {})
+
+        # فقط پیام خصوصی صاحب ربات
+        if chat.get("type") != "private":
+            continue
+
+        text = message.get("text", "").strip()
+
+        if text == "/start":
+
+            telegram(
+                "sendMessage",
+                {
+                    "chat_id": chat["id"],
+                    "text":
+                    "⚽️ Hessambetbot فعال است.\n\n"
+                    "بازی‌ها را به این شکل بفرست:\n\n"
+                    "Real Madrid - Barcelona | 31/08/2026 | 23:00\n"
+                    "Liverpool - Arsenal | 01/09/2026 | 22:30\n\n"
+                    "هر بازی در یک خط."
+                }
+            )
+
+            continue
+
+        new_matches = parse_matches(text)
+
+        if not new_matches:
+
+            telegram(
+                "sendMessage",
+                {
+                    "chat_id": chat["id"],
+                    "text":
+                    "❌ قالب بازی قابل تشخیص نیست.\n\n"
+                    "نمونه:\n"
+                    "Real Madrid - Barcelona | 31/08/2026 | 23:00"
+                }
+            )
+
+            continue
+
+        added, total = add_matches(new_matches)
+
+        telegram(
+            "sendMessage",
+            {
+                "chat_id": chat["id"],
+                "text":
+                f"✅ {added} بازی اضافه شد.\n"
+                f"📋 مجموع بازی‌های ذخیره‌شده: {total}"
+            }
+        )
+
+    save_json(STATE_FILE, state)
+
+
+def check_matches():
 
     now = datetime.now(IRAN_TZ)
 
-    matches = load_matches()
+    matches = load_json(MATCHES_FILE, [])
 
     changed = False
 
     for match in matches:
 
-        match_time = datetime.fromisoformat(match["datetime"])
+        match_time = datetime.fromisoformat(
+            match["datetime"]
+        )
 
         hours_left = (
             match_time - now
         ).total_seconds() / 3600
 
-        # 24 ساعت قبل
-        if 23 <= hours_left <= 25 and not match["sent_24h"]:
+        # ----------------------------
+        # 24 hours before
+        # ----------------------------
 
-            await send_match(
-                application,
-                match,
-                "⏳ 24 HOURS TO GO"
+        if (
+            23.0 <= hours_left <= 24.1
+            and not match["sent_24h"]
+        ):
+
+            text = (
+                "⏳ ۲۴ ساعت تا شروع مسابقه\n\n"
+                f"⚽️ {match['home']}\n"
+                "🆚\n"
+                f"⚽️ {match['away']}\n\n"
+                f"📅 {match_time.strftime('%d/%m/%Y')}\n"
+                f"🕐 {match_time.strftime('%H:%M')}\n"
+                "🇮🇷 به وقت ایران"
             )
 
+            send_message(text)
+
             match["sent_24h"] = True
+
             changed = True
 
-        # روز مسابقه
-        elif (
+        # ----------------------------
+        # Match day
+        # ----------------------------
+
+        if (
             match_time.date() == now.date()
             and match_time > now
             and not match["sent_today"]
         ):
 
-            await send_match(
-                application,
-                match,
-                "🔥 TODAY'S MATCH"
+            text = (
+                "🔥 بازی امروز\n\n"
+                f"⚽️ {match['home']}\n"
+                "🆚\n"
+                f"⚽️ {match['away']}\n\n"
+                f"📅 امروز\n"
+                f"🕐 {match_time.strftime('%H:%M')}\n"
+                "🇮🇷 به وقت ایران"
             )
 
+            send_message(text)
+
             match["sent_today"] = True
+
             changed = True
 
     if changed:
-        save_matches(matches)
+
+        save_json(MATCHES_FILE, matches)
 
 
-async def send_match(application, match, title):
+def main():
 
-    dt = datetime.fromisoformat(match["datetime"])
+    process_updates()
 
-    text = (
-        f"{title}\n\n"
-        f"⚽️ {match['home']}\n"
-        f"🆚\n"
-        f"⚽️ {match['away']}\n\n"
-        f"📅 {dt.strftime('%d/%m/%Y')}\n"
-        f"🕐 {dt.strftime('%H:%M')}\n"
-        f"🇮🇷 Iran Time"
-    )
-
-    await application.bot.send_message(
-        chat_id=GROUP_CHAT_ID,
-        text=text
-    )
-
-
-async def main():
-
-    application = (
-        Application.builder()
-        .token(TOKEN)
-        .build()
-    )
-
-    application.add_handler(
-        CommandHandler("start", start)
-    )
-
-    application.add_handler(
-        MessageHandler(
-            filters.TEXT & ~filters.COMMAND,
-            receive_matches
-        )
-    )
-
-    await application.initialize()
-    await application.start()
-
-    await check_matches(application)
-
-    await application.stop()
-    await application.shutdown()
+    check_matches()
 
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+
+    main()
