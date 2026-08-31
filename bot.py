@@ -37,7 +37,6 @@ def telegram(method, data=None, files=None):
     if files:
 
         boundary = "----HessamBetBoundary"
-
         body = bytearray()
 
         for name, value in (data or {}).items():
@@ -451,7 +450,7 @@ def extract_match(html, match_id):
 
 
 # =========================================================
-# IMAGE HELPERS
+# IMAGE
 # =========================================================
 
 def download_image(url):
@@ -521,18 +520,10 @@ def rounded_rectangle(
     )
 
 
-# =========================================================
-# MATCH CARD
-# =========================================================
-
 def create_match_card(match, mode):
 
     width = 1200
     height = 800
-
-    # -----------------------------------------------------
-    # BACKGROUND
-    # -----------------------------------------------------
 
     image = Image.new(
         "RGB",
@@ -540,21 +531,13 @@ def create_match_card(match, mode):
         (11, 14, 22)
     )
 
-    draw = ImageDraw.Draw(
-        image
-    )
-
-    # Subtle background circles
-
     glow = Image.new(
         "RGBA",
         (width, height),
         (0, 0, 0, 0)
     )
 
-    glow_draw = ImageDraw.Draw(
-        glow
-    )
+    glow_draw = ImageDraw.Draw(glow)
 
     glow_draw.ellipse(
         (-250, -200, 500, 550),
@@ -575,47 +558,34 @@ def create_match_card(match, mode):
         glow
     ).convert("RGB")
 
-    draw = ImageDraw.Draw(
-        image
-    )
+    draw = ImageDraw.Draw(image)
 
-    # -----------------------------------------------------
     # HEADER
-    # -----------------------------------------------------
 
     draw.text(
         (600, 48),
         "HessamBet",
-        font=get_font(
-            56,
-            True
-        ),
+        font=get_font(56, True),
         anchor="ma",
         fill=(255, 255, 255)
     )
 
-    if mode == "24h":
-
-        title = "24 HOURS TO GO"
-
-    else:
-
-        title = "TODAY'S MATCH"
+    title = (
+        "24 HOURS TO GO"
+        if mode == "24h"
+        else
+        "TODAY'S MATCH"
+    )
 
     draw.text(
         (600, 112),
         title,
-        font=get_font(
-            25,
-            True
-        ),
+        font=get_font(25, True),
         anchor="ma",
         fill=(180, 190, 210)
     )
 
-    # -----------------------------------------------------
-    # MAIN MATCH PANEL
-    # -----------------------------------------------------
+    # MAIN PANEL
 
     rounded_rectangle(
         draw,
@@ -626,9 +596,7 @@ def create_match_card(match, mode):
         width=2
     )
 
-    # -----------------------------------------------------
-    # TEAM LOGOS
-    # -----------------------------------------------------
+    # LOGOS
 
     try:
 
@@ -647,8 +615,6 @@ def create_match_card(match, mode):
         away_logo.thumbnail(
             (210, 210)
         )
-
-        # Logo circles / panels
 
         rounded_rectangle(
             draw,
@@ -689,32 +655,22 @@ def create_match_card(match, mode):
             error
         )
 
-    # -----------------------------------------------------
     # VS
-    # -----------------------------------------------------
 
     draw.text(
         (600, 355),
         "VS",
-        font=get_font(
-            48,
-            True
-        ),
+        font=get_font(48, True),
         anchor="mm",
         fill=(255, 255, 255)
     )
 
-    # -----------------------------------------------------
     # TEAM NAMES
-    # -----------------------------------------------------
 
     draw.text(
         (280, 535),
         match["home"],
-        font=get_font(
-            32,
-            True
-        ),
+        font=get_font(32, True),
         anchor="ma",
         fill=(255, 255, 255)
     )
@@ -722,28 +678,15 @@ def create_match_card(match, mode):
     draw.text(
         (920, 535),
         match["away"],
-        font=get_font(
-            32,
-            True
-        ),
+        font=get_font(32, True),
         anchor="ma",
         fill=(255, 255, 255)
     )
 
-    # -----------------------------------------------------
-    # MATCH DATE / TIME
-    # -----------------------------------------------------
+    # DATE / TIME
 
     match_time = datetime.fromisoformat(
         match["datetime"]
-    )
-
-    date_text = match_time.strftime(
-        "%d/%m/%Y"
-    )
-
-    time_text = match_time.strftime(
-        "%H:%M"
     )
 
     rounded_rectangle(
@@ -755,44 +698,27 @@ def create_match_card(match, mode):
 
     draw.text(
         (600, 612),
-        date_text,
-        font=get_font(
-            23,
-            True
-        ),
+        match_time.strftime("%d/%m/%Y"),
+        font=get_font(23, True),
         anchor="mm",
         fill=(210, 215, 225)
     )
 
     draw.text(
         (600, 645),
-        time_text,
-        font=get_font(
-            27,
-            True
-        ),
+        match_time.strftime("%H:%M"),
+        font=get_font(27, True),
         anchor="mm",
         fill=(255, 255, 255)
     )
 
-    # -----------------------------------------------------
-    # FOOTER
-    # -----------------------------------------------------
-
     draw.text(
         (600, 740),
         "IRAN TIME  •  HessamBet",
-        font=get_font(
-            20,
-            True
-        ),
+        font=get_font(20, True),
         anchor="mm",
         fill=(125, 135, 155)
     )
-
-    # -----------------------------------------------------
-    # OUTPUT
-    # -----------------------------------------------------
 
     output = BytesIO()
 
@@ -840,7 +766,7 @@ def add_match(match):
 
 
 # =========================================================
-# TELEGRAM UPDATES
+# TELEGRAM COMMANDS
 # =========================================================
 
 def process_updates():
@@ -886,15 +812,11 @@ def process_updates():
             {}
         )
 
-        # Commands only from private chat
-
         if chat.get(
             "type"
         ) != "private":
 
             continue
-
-        # Only owner
 
         if message.get(
             "from",
@@ -910,9 +832,7 @@ def process_updates():
             ""
         ).strip()
 
-        # -------------------------------------------------
         # START
-        # -------------------------------------------------
 
         if text == "/start":
 
@@ -923,9 +843,7 @@ def process_updates():
 
             continue
 
-        # -------------------------------------------------
         # TEST 24H
-        # -------------------------------------------------
 
         if text == "/test24":
 
@@ -968,16 +886,9 @@ def process_updates():
                     error
                 )
 
-                send_message(
-                    chat["id"],
-                    "❌ خطا در ساخت کارت تست."
-                )
-
             continue
 
-        # -------------------------------------------------
         # TEST TODAY
-        # -------------------------------------------------
 
         if text == "/testtoday":
 
@@ -1020,16 +931,9 @@ def process_updates():
                     error
                 )
 
-                send_message(
-                    chat["id"],
-                    "❌ خطا در ساخت کارت تست."
-                )
-
             continue
 
-        # -------------------------------------------------
         # FOTMOB LINK
-        # -------------------------------------------------
 
         if "fotmob.com/match/" in text:
 
@@ -1095,7 +999,7 @@ def process_updates():
 
 
 # =========================================================
-# AUTOMATIC NOTIFICATIONS
+# NOTIFICATIONS
 # =========================================================
 
 def check_notifications():
@@ -1123,11 +1027,11 @@ def check_notifications():
 
             continue
 
-        # -------------------------------------------------
-        # 24 HOURS BEFORE
-        # -------------------------------------------------
+        # =================================================
+        # 24 HOURS BEFORE MATCH
+        # =================================================
 
-        notification_time = (
+        notification_24h = (
             match_time - timedelta(
                 hours=24
             )
@@ -1139,7 +1043,7 @@ def check_notifications():
                 False
             )
             and
-            notification_time <= now
+            now >= notification_24h
             and
             now < match_time
         ):
@@ -1161,16 +1065,23 @@ def check_notifications():
 
                 changed = True
 
+                print(
+                    "24H notification sent:",
+                    match["home"],
+                    "-",
+                    match["away"]
+                )
+
             except Exception as error:
 
                 print(
-                    "24H NOTIFICATION ERROR:",
+                    "24H ERROR:",
                     error
                 )
 
-        # -------------------------------------------------
-        # TODAY
-        # -------------------------------------------------
+        # =================================================
+        # MATCH DAY AT 12:00 OR ANY TIME AFTER 12:00
+        # =================================================
 
         if (
             not match.get(
@@ -1178,14 +1089,11 @@ def check_notifications():
                 False
             )
             and
-            match_time.date()
-            == now.date()
+            match_time.date() == now.date()
             and
             match_time > now
             and
-            now.hour == 12
-            and
-            now.minute < 5
+            now.hour >= 12
         ):
 
             try:
@@ -1205,10 +1113,17 @@ def check_notifications():
 
                 changed = True
 
+                print(
+                    "Today notification sent:",
+                    match["home"],
+                    "-",
+                    match["away"]
+                )
+
             except Exception as error:
 
                 print(
-                    "TODAY NOTIFICATION ERROR:",
+                    "TODAY ERROR:",
                     error
                 )
 
