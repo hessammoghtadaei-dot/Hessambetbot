@@ -10,7 +10,7 @@
     "home": "Keshmir",
     "away": "Naft",
     "datetime": "2026-09-01T22:30:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   },
   {
