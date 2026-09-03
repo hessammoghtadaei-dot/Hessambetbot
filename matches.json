@@ -158,5 +158,65 @@
     "datetime": "2026-09-06T17:45:00+03:30",
     "sent_24h": false,
     "sent_today": false
+  },
+  {
+    "match_id": "5795435",
+    "home": "Arsenal",
+    "away": "Chelsea",
+    "home_id": 9825,
+    "away_id": 8455,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8455.png",
+    "datetime": "2026-09-06T19:00:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5749667",
+    "home": "Juventus",
+    "away": "Milan",
+    "home_id": 9885,
+    "away_id": 8564,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9885.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8564.png",
+    "datetime": "2026-09-06T22:15:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "6106272",
+    "home": "Borussia Dortmund",
+    "away": "Villarreal",
+    "home_id": 9789,
+    "away_id": 10205,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9789.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/10205.png",
+    "datetime": "2026-09-08T22:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "6106286",
+    "home": "FC Porto",
+    "away": "Manchester City",
+    "home_id": 9773,
+    "away_id": 8456,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9773.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png",
+    "datetime": "2026-09-08T22:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "6106242",
+    "home": "Real Madrid",
+    "away": "Inter",
+    "home_id": 8633,
+    "away_id": 8636,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8636.png",
+    "datetime": "2026-09-08T22:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
   }
 ]
