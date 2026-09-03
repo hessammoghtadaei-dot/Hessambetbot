@@ -134,5 +134,29 @@
     "datetime": "2026-09-05T19:30:00+03:30",
     "sent_24h": false,
     "sent_today": false
+  },
+  {
+    "match_id": "5881158",
+    "home": "Schalke 04",
+    "away": "Bayern München",
+    "home_id": 10189,
+    "away_id": 9823,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/10189.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9823.png",
+    "datetime": "2026-09-05T20:00:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5868049",
+    "home": "Valencia",
+    "away": "Barcelona",
+    "home_id": 10267,
+    "away_id": 8634,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/10267.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8634.png",
+    "datetime": "2026-09-06T17:45:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
   }
 ]
