@@ -74,5 +74,65 @@
     "datetime": "2026-08-31T23:00:00+03:30",
     "sent_24h": true,
     "sent_today": true
+  },
+  {
+    "match_id": "5868043",
+    "home": "Real Betis",
+    "away": "Real Madrid",
+    "home_id": 8603,
+    "away_id": 8633,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8603.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
+    "datetime": "2026-09-04T22:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5795441",
+    "home": "Ipswich Town",
+    "away": "Liverpool",
+    "home_id": 9902,
+    "away_id": 8650,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9902.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8650.png",
+    "datetime": "2026-09-04T22:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5802925",
+    "home": "Paris Saint-Germain",
+    "away": "Monaco",
+    "home_id": 9847,
+    "away_id": 9829,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9847.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9829.png",
+    "datetime": "2026-09-04T22:35:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5795442",
+    "home": "Manchester City",
+    "away": "Coventry City",
+    "home_id": 8456,
+    "away_id": 8669,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8669.png",
+    "datetime": "2026-09-05T17:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5749666",
+    "home": "Inter",
+    "away": "Napoli",
+    "home_id": 8636,
+    "away_id": 9875,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8636.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9875.png",
+    "datetime": "2026-09-05T19:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
   }
 ]
