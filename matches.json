@@ -120,7 +120,7 @@
     "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png",
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8669.png",
     "datetime": "2026-09-05T17:30:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   },
   {
