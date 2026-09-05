@@ -121,7 +121,7 @@
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8669.png",
     "datetime": "2026-09-05T17:30:00+03:30",
     "sent_24h": true,
-    "sent_today": false
+    "sent_today": true
   },
   {
     "match_id": "5749666",
@@ -133,7 +133,7 @@
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9875.png",
     "datetime": "2026-09-05T19:30:00+03:30",
     "sent_24h": true,
-    "sent_today": false
+    "sent_today": true
   },
   {
     "match_id": "5881158",
@@ -145,7 +145,7 @@
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9823.png",
     "datetime": "2026-09-05T20:00:00+03:30",
     "sent_24h": true,
-    "sent_today": false
+    "sent_today": true
   },
   {
     "match_id": "5868049",
