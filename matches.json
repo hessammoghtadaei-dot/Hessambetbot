@@ -240,7 +240,7 @@
     "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9847.png",
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/6019.png",
     "datetime": "2026-09-09T22:30:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   },
   {
@@ -252,7 +252,7 @@
     "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8650.png",
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9906.png",
     "datetime": "2026-09-09T22:30:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   },
   {
@@ -264,7 +264,7 @@
     "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9875.png",
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png",
     "datetime": "2026-09-09T22:30:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   },
   {
