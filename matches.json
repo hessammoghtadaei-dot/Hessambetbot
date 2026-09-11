@@ -324,7 +324,7 @@
     "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8472.png",
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png",
     "datetime": "2026-09-12T22:30:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   },
   {
@@ -336,7 +336,7 @@
     "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8370.png",
     "datetime": "2026-09-12T22:30:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   },
   {
