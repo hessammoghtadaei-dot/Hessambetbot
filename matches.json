@@ -420,7 +420,7 @@
     "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/101614.png",
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/101895.png",
     "datetime": "2026-09-14T21:45:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   },
   {
