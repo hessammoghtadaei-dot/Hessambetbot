@@ -396,7 +396,7 @@
     "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/102119.png",
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/176352.png",
     "datetime": "2026-09-14T19:30:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   },
   {
