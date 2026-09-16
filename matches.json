@@ -492,7 +492,7 @@
     "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9885.png",
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8464.png",
     "datetime": "2026-09-17T22:30:00+03:30",
-    "sent_24h": false,
+    "sent_24h": true,
     "sent_today": false
   }
 ]
