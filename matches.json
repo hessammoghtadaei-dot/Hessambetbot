@@ -578,5 +578,41 @@
     "datetime": "2026-09-20T16:30:00+03:30",
     "sent_24h": false,
     "sent_today": false
+  },
+  {
+    "match_id": "5795457",
+    "home": "Brighton & Hove Albion",
+    "away": "Arsenal",
+    "home_id": 10204,
+    "away_id": 9825,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/10204.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png",
+    "datetime": "2026-09-19T17:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5795461",
+    "home": "Manchester City",
+    "away": "Sunderland",
+    "home_id": 8456,
+    "away_id": 8472,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8472.png",
+    "datetime": "2026-09-20T16:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5868072",
+    "home": "Atlético Madrid",
+    "away": "Real Madrid",
+    "home_id": 9906,
+    "away_id": 8633,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9906.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
+    "datetime": "2026-09-20T17:45:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
   }
 ]
