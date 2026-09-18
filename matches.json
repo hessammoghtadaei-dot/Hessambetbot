@@ -542,5 +542,41 @@
     "datetime": "2026-09-19T19:30:00+03:30",
     "sent_24h": false,
     "sent_today": false
+  },
+  {
+    "match_id": "5881177",
+    "home": "VfB Stuttgart",
+    "away": "Borussia Dortmund",
+    "home_id": 10269,
+    "away_id": 9789,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/10269.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9789.png",
+    "datetime": "2026-09-19T20:00:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5868078",
+    "home": "Sevilla",
+    "away": "Barcelona",
+    "home_id": 8302,
+    "away_id": 8634,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8302.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8634.png",
+    "datetime": "2026-09-19T22:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5795455",
+    "home": "AFC Bournemouth",
+    "away": "Liverpool",
+    "home_id": 8678,
+    "away_id": 8650,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8678.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8650.png",
+    "datetime": "2026-09-20T16:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
   }
 ]
