@@ -494,5 +494,53 @@
     "datetime": "2026-09-17T22:30:00+03:30",
     "sent_24h": true,
     "sent_today": true
+  },
+  {
+    "match_id": "5881171",
+    "home": "Bayern München",
+    "away": "Union Berlin",
+    "home_id": 9823,
+    "away_id": 8149,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9823.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8149.png",
+    "datetime": "2026-09-18T22:00:00+03:30",
+    "sent_24h": true,
+    "sent_today": true
+  },
+  {
+    "match_id": "5795456",
+    "home": "Brentford",
+    "away": "Chelsea",
+    "home_id": 9937,
+    "away_id": 8455,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9937.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8455.png",
+    "datetime": "2026-09-18T22:30:00+03:30",
+    "sent_24h": true,
+    "sent_today": true
+  },
+  {
+    "match_id": "5795464",
+    "home": "Tottenham Hotspur",
+    "away": "Aston Villa",
+    "home_id": 8586,
+    "away_id": 10252,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8586.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/10252.png",
+    "datetime": "2026-09-19T15:00:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5749681",
+    "home": "Roma",
+    "away": "Inter",
+    "home_id": 8686,
+    "away_id": 8636,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8686.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8636.png",
+    "datetime": "2026-09-19T19:30:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
   }
 ]
