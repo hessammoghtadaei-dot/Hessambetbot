@@ -626,5 +626,41 @@
     "datetime": "2026-09-20T19:00:00+03:30",
     "sent_24h": true,
     "sent_today": false
+  },
+  {
+    "match_id": "5749685",
+    "home": "Juventus",
+    "away": "Atalanta",
+    "home_id": 9885,
+    "away_id": 8524,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9885.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8524.png",
+    "datetime": "2026-09-20T19:30:00+03:30",
+    "sent_24h": true,
+    "sent_today": false
+  },
+  {
+    "match_id": "5802945",
+    "home": "Marseille",
+    "away": "Paris Saint-Germain",
+    "home_id": 8592,
+    "away_id": 9847,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8592.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9847.png",
+    "datetime": "2026-09-20T22:15:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
+  },
+  {
+    "match_id": "5749680",
+    "home": "Milan",
+    "away": "Lecce",
+    "home_id": 8564,
+    "away_id": 9888,
+    "home_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/8564.png",
+    "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/9888.png",
+    "datetime": "2026-09-20T22:15:00+03:30",
+    "sent_24h": false,
+    "sent_today": false
   }
 ]
