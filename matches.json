@@ -733,7 +733,7 @@
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/10155.png",
     "datetime": "2026-09-26T22:15:00+03:30",
     "sent_24h": true,
-    "sent_today": false
+    "sent_today": true
   },
   {
     "match_id": "5181850",
@@ -745,7 +745,7 @@
     "away_logo": "https://images.fotmob.com/image_resources/logo/teamlogo/6720.png",
     "datetime": "2026-09-26T22:15:00+03:30",
     "sent_24h": true,
-    "sent_today": false
+    "sent_today": true
   },
   {
     "match_id": "5181827",
